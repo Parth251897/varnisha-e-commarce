@@ -1,3 +1,6 @@
+# Local MongoDB data directory (raw database files) — never commit
+mongodb_data/
+
 # Logs
 logs
 *.log
@@ -141,3 +144,10 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+# Sibling app repos checked out alongside this infra repo — each is its own
+# independent git repository (varnisha-e-commarce-{backend,user,admin}),
+# not part of this repo's history.
+/varnisha-e-commarce-backend/
+/varnisha-e-commarce-user/
+/varnisha-e-commarce-admin/
