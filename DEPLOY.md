@@ -52,16 +52,22 @@ outputs — you'll need all three below.
 
 ## 4. Point DNS at the box (GoDaddy)
 
-In GoDaddy's DNS management for `varnisha.com`, add 3 **A records**:
+In GoDaddy's DNS management for `varnisha.com`, add 4 **A records**:
 
 | Host    | Points to (elastic_ip output) | TTL |
 |---------|-------------------------------|-----|
 | `api`   | `<elastic_ip>`                | 600 |
 | `www`   | `<elastic_ip>`                | 600 |
 | `laxmi` | `<elastic_ip>`                | 600 |
+| `@`     | `<elastic_ip>`                | 600 |
+
+The `@` record is the bare apex (`varnisha.com` with no subdomain) — it just
+redirects to `www.varnisha.com` (see the Nginx config in step 6), but it
+still needs its own A record and its own cert, or Certbot has nothing to
+attach TLS to.
 
 Confirm propagation before continuing: `dig api.varnisha.com` (or `nslookup`
-on Windows) should return the Elastic IP.
+on Windows) should return the Elastic IP. Check `dig varnisha.com` too.
 
 ## 5. Add GitHub Actions secrets (all 3 app repos)
 
@@ -90,7 +96,7 @@ cp ~/infra/ecosystem.config.js ~/apps/ecosystem.config.js
 
 # Nginx site configs
 sudo cp ~/infra/infra/nginx/*.conf /etc/nginx/sites-available/
-for f in api.varnisha.com www.varnisha.com laxmi.varnisha.com; do
+for f in api.varnisha.com www.varnisha.com laxmi.varnisha.com varnisha.com; do
   sudo ln -sf /etc/nginx/sites-available/$f.conf /etc/nginx/sites-enabled/
 done
 sudo rm -f /etc/nginx/sites-enabled/default
@@ -141,9 +147,16 @@ curl http://127.0.0.1:3045
 
 Once DNS resolves and the apps are running over plain HTTP via Nginx:
 ```bash
-sudo certbot --nginx -d api.varnisha.com -d www.varnisha.com -d laxmi.varnisha.com
+sudo certbot --nginx -d api.varnisha.com -d www.varnisha.com -d laxmi.varnisha.com -d varnisha.com
 ```
-Certbot rewrites the 3 Nginx configs to add TLS + auto-renewal.
+Certbot rewrites the 4 Nginx configs to add TLS + auto-renewal. Certbot maps
+each `-d` flag to the Nginx `server_name` matching that exact hostname — if
+you ever add a domain here that has no `server_name` line in any
+`sites-enabled` config (e.g. running `certbot install --cert-name
+varnisha.com` before the `varnisha.com` block exists), it fails with
+"Could not automatically find a matching server block ... Set the
+`server_name` directive to use the Nginx installer." Add/enable the
+matching `.conf` first, `nginx -t && systemctl reload nginx`, then retry.
 
 ## 9. Set up the mongodump → S3 backup cron
 
@@ -156,6 +169,7 @@ bucket via the AWS CLI or SDK — the EC2 instance role already has
 
 - [ ] `https://api.varnisha.com/` returns `{"success":true,"message":"Varnisha Jewels Security Core API is active",...}`
 - [ ] `https://www.varnisha.com` and `https://laxmi.varnisha.com` load over valid HTTPS
+- [ ] `https://varnisha.com` redirects to `https://www.varnisha.com`
 - [ ] Pushing to one app repo only redeploys that app (`pm2 logs <app>` shows the restart)
 - [ ] An image uploaded via the admin Products page returns a working `https://<bucket>.s3.ap-south-1.amazonaws.com/...` URL
 - [ ] A manually-triggered `mongodump` lands in the private backup bucket
