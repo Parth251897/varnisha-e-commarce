@@ -22,8 +22,12 @@ if [ ! -f /swapfile ]; then
   echo "/swapfile none swap sw 0 0" >> /etc/fstab
 fi
 
-# ── Node.js 20.x LTS + PM2 ──────────────────────────────────────────────────
-curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+# ── Node.js 26.x + PM2 ───────────────────────────────────────────────────
+# Pinned to match the version used in CI (see .github/workflows/deploy.yml
+# in each app repo) — npm's dependency resolution isn't perfectly stable
+# across major versions, so `npm ci` on the box must use the same npm that
+# generated package-lock.json to avoid spurious EUSAGE failures.
+curl -fsSL https://deb.nodesource.com/setup_26.x | bash -
 apt-get install -y nodejs
 npm install -g pm2
 pm2 install pm2-logrotate
