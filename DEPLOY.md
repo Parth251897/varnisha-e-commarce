@@ -61,10 +61,10 @@ In GoDaddy's DNS management for `varnisha.com`, add 4 **A records**:
 | `laxmi` | `<elastic_ip>`                | 600 |
 | `@`     | `<elastic_ip>`                | 600 |
 
-The `@` record is the bare apex (`varnisha.com` with no subdomain) — it just
-redirects to `www.varnisha.com` (see the Nginx config in step 6), but it
-still needs its own A record and its own cert, or Certbot has nothing to
-attach TLS to.
+The `@` record is the bare apex (`varnisha.com` with no subdomain) — it's
+the canonical storefront host; `www.varnisha.com` redirects to it (see the
+Nginx config in step 6). It still needs its own A record and its own cert,
+or Certbot has nothing to attach TLS to.
 
 Confirm propagation before continuing: `dig api.varnisha.com` (or `nslookup`
 on Windows) should return the Elastic IP. Check `dig varnisha.com` too.
@@ -127,7 +127,7 @@ nano ~/apps/varnisha-e-commarce-backend/.env
 Set at minimum: `NODE_ENV=production`, `PORT=3045`,
 `MONGO_URI=mongodb://varnishaApp:<password>@127.0.0.1:27017/ecommercestore`,
 `JWT_SECRET=<generate with: node -e "console.log(require('crypto').randomBytes(32).toString('hex'))">`,
-`CLIENT_URL=https://www.varnisha.com`, `ADMIN_URL=https://laxmi.varnisha.com`,
+`CLIENT_URL=https://varnisha.com`, `ADMIN_URL=https://laxmi.varnisha.com`,
 `AWS_REGION=ap-south-1`, `S3_BUCKET_NAME=<uploads_bucket_name output>`, plus
 Razorpay/Twilio/Firebase/Gemini/Email keys from your existing `.env`.
 
@@ -168,8 +168,8 @@ bucket via the AWS CLI or SDK — the EC2 instance role already has
 ## Verification checklist
 
 - [ ] `https://api.varnisha.com/` returns `{"success":true,"message":"Varnisha Jewels Security Core API is active",...}`
-- [ ] `https://www.varnisha.com` and `https://laxmi.varnisha.com` load over valid HTTPS
-- [ ] `https://varnisha.com` redirects to `https://www.varnisha.com`
+- [ ] `https://varnisha.com` and `https://laxmi.varnisha.com` load over valid HTTPS
+- [ ] `https://www.varnisha.com` redirects to `https://varnisha.com`
 - [ ] Pushing to one app repo only redeploys that app (`pm2 logs <app>` shows the restart)
 - [ ] An image uploaded via the admin Products page returns a working `https://<bucket>.s3.ap-south-1.amazonaws.com/...` URL
 - [ ] A manually-triggered `mongodump` lands in the private backup bucket
