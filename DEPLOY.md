@@ -24,6 +24,12 @@ aws configure
 ssh-keygen -t ed25519 -f ~/.ssh/varnisha-deploy -C "varnisha-deploy"
 ```
 
+On Windows PowerShell, use instead:
+```powershell
+New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.ssh" | Out-Null
+ssh-keygen -t ed25519 -f "$env:USERPROFILE\.ssh\varnisha-deploy" -C "varnisha-deploy"
+```
+
 This one keypair is used for (a) your own SSH access to the box, and (b) the
 GitHub Actions deploy secret in all 3 app repos. Keep `varnisha-deploy`
 (private) safe; you'll paste its contents into GitHub secrets in step 5.
