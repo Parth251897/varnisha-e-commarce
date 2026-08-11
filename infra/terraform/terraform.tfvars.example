@@ -1,0 +1,17 @@
+# Copy to terraform.tfvars and fill in your values.
+# NEVER commit terraform.tfvars — it's gitignored, but double-check before committing.
+
+aws_region          = "ap-south-1"
+project_name        = "varnisha"
+instance_type       = "t3.medium"
+
+# Public half only — generate with:
+#   ssh-keygen -t ed25519 -f ~/.ssh/varnisha-deploy -C "varnisha-deploy"
+# Paste the contents of varnisha-deploy.pub here. Keep the private half
+# (varnisha-deploy) for your own SSH access and as the GitHub Actions
+# EC2_SSH_PRIVATE_KEY secret in all 3 app repos.
+ssh_public_key      = "ssh-ed25519 AAAA... your-deploy-key-comment"
+
+# Must be globally unique across all of S3
+uploads_bucket_name = "varnisha-jewels-uploads-prod"
+backups_bucket_name = "varnisha-jewels-db-backups-prod"
