@@ -106,6 +106,11 @@ done
 sudo rm -f /etc/nginx/sites-enabled/default
 sudo nginx -t && sudo systemctl reload nginx
 
+# Cloudflare Origin Firewall Lock Down (Allows only Cloudflare IPs on Ports 80 & 443)
+cd ~/infra && git pull origin main
+chmod +x ~/infra/infra/scripts/setup_cloudflare_firewall.sh
+sudo ~/infra/infra/scripts/setup_cloudflare_firewall.sh
+
 # MongoDB: create an admin user and the app-scoped user, then enable auth
 mongosh
 ```

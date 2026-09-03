@@ -94,8 +94,13 @@ We have provided an automated script [`infra/scripts/setup_cloudflare_firewall.s
 
 To run it on your Ubuntu EC2 instance:
 ```bash
-chmod +x infra/scripts/setup_cloudflare_firewall.sh
-sudo ./infra/scripts/setup_cloudflare_firewall.sh
+# 1. Pull the latest infra updates on the server
+cd ~/infra
+git pull origin main
+
+# 2. Make executable and run the Cloudflare firewall setup
+chmod +x ~/infra/infra/scripts/setup_cloudflare_firewall.sh
+sudo ~/infra/infra/scripts/setup_cloudflare_firewall.sh
 ```
 
 **What this script does**:
