@@ -208,6 +208,13 @@ resource "aws_instance" "app" {
   key_name               = aws_key_pair.deploy.key_name
   iam_instance_profile   = aws_iam_instance_profile.app.name
 
+  # Require IMDSv2 (session-token-based metadata requests) — closes the SSRF
+  # → instance-credential-theft path an IMDSv1-reachable endpoint leaves open.
+  metadata_options {
+    http_tokens   = "required"
+    http_endpoint = "enabled"
+  }
+
   root_block_device {
     volume_type = "gp3"
     volume_size = 30

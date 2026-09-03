@@ -61,9 +61,33 @@ Current Elastic IP: `13.234.5.160` (not a secret — safe to reference).
 ## Known gaps / follow-ups
 
 - **Categories, collections, and CMS (blog/look/social) admin pages are static mockups** — hardcoded demo data, not wired to the real backend API at all. Product uploads work; these don't yet have a real create/edit flow to hook an uploader into.
-- **`mongodump` → S3 backup cron** not yet implemented (DEPLOY.md step 9) — still to do.
 - **Root `.tfstate` is local-only** (not remote/S3 backend) — fine for a solo operator, but means Terraform state only exists on this machine. Back it up.
-- Credentials pasted into the chat session during setup (AWS root password, an AWS access key pair) should be rotated if not already done.
+- Credentials pasted into the chat session during setup (AWS root password, an AWS access key pair, a MongoDB password) should be rotated if not already done.
+- IAM user `parthpatel` still carries broad `EC2FullAccess`/`S3FullAccess`/`IAMFullAccess` — accepted as a known risk for a solo-operator account, not yet trimmed.
+
+## Outage resolved (2026-08-12)
+
+`api.varnisha.com` and `laxmi.varnisha.com` 443 blocks were re-attached via
+`sudo certbot install --cert-name api.varnisha.com -d api.varnisha.com -d
+laxmi.varnisha.com` (that lineage already covered both hostnames). Verified
+externally: `api.varnisha.com` returns the real JSON health payload,
+`laxmi.varnisha.com` returns a 307 (real Next.js admin app, not the
+storefront). The box's live configs were pulled and committed into
+`infra/nginx/*.conf` as the new source of truth (see the header comments in
+those files) — they now match production exactly, so the `DEPLOY.md` step 6
+`cp` command is safe to re-run going forward. **Still outstanding**: the box
+hasn't pulled these updated configs yet, so `server_tokens off` isn't live
+yet — re-run DEPLOY.md step 6 on the box to deploy it.
+
+## Security hardening pass (this session)
+
+Applied as part of a full security/threat-model audit (see the published report artifact) — code-only fixes, no live infra changes:
+- **`mongodump` → S3 backup cron**: now implemented in `cron/cronJobs.js` (was the one item in DEPLOY.md step 9 still outstanding). Activates once `BACKUPS_BUCKET_NAME` is set in the box's `.env` — not yet set on the live box, so the cron is currently a no-op there until that's done.
+- **CORS allowlist tightened** (`server.js`): removed a stale, unrelated, NXDOMAIN origin (`rajasthanijewels.varnisha.com`) and the `origin.endsWith(".varnisha.com")` wildcard rule that auto-trusted any future subdomain with credentials — now an explicit allowlist only.
+- **JWT verification pinned to `algorithms: ["HS256"]`** in `authMiddleware.js` (defense-in-depth against algorithm-confusion attacks; not previously pinned).
+- **`server_tokens off;`** added to all 4 Nginx site templates (was leaking the exact Nginx version in every response header).
+- **IMDSv2 enforced** (`metadata_options { http_tokens = "required" }`) in `infra/terraform/main.tf` — closes an SSRF→instance-credential-theft path. **Not yet applied** — needs `terraform plan`/`apply` on the box owner's machine (not run automatically; billable/infra-affecting change).
+- Mass-assignment risk in `settingsController.js`/`procurementController.js` (`Model.create(req.body)`) was reviewed but intentionally **not** changed this pass — both are already admin-authenticated, and the underlying schemas (store settings, supplier/PO/contract records) are mostly admin-editable-by-design fields, so a rushed allowlist risked breaking legitimate admin functionality. Revisit with real form-field lists during the Phase 1 bug-fix pass instead.
 
 ## Quick reference
 

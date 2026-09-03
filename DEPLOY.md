@@ -94,7 +94,11 @@ Once connected:
 git clone https://github.com/Parth251897/varnisha-e-commarce.git ~/infra
 cp ~/infra/ecosystem.config.js ~/apps/ecosystem.config.js
 
-# Nginx site configs
+# Nginx site configs — these are now the LIVE, Certbot-managed configs
+# (pulled from the box and committed on 2026-08-12 after an earlier version
+# of this exact command overwrote the TLS blocks and broke api/laxmi in
+# production). Re-running this cp is safe today and is also how you push
+# repo-side Nginx changes (e.g. the server_tokens off hardening) to the box.
 sudo cp ~/infra/infra/nginx/*.conf /etc/nginx/sites-available/
 for f in api.varnisha.com www.varnisha.com laxmi.varnisha.com varnisha.com; do
   sudo ln -sf /etc/nginx/sites-available/$f.conf /etc/nginx/sites-enabled/
@@ -160,10 +164,13 @@ matching `.conf` first, `nginx -t && systemctl reload nginx`, then retry.
 
 ## 9. Set up the mongodump → S3 backup cron
 
-Add a daily cron job on the box (or extend `varnisha-e-commarce-backend/cron/cronJobs.js`)
-that runs `mongodump` and uploads the archive to the `backups_bucket_name`
-bucket via the AWS CLI or SDK — the EC2 instance role already has
-`s3:PutObject` on that bucket, no credentials needed.
+Implemented in `varnisha-e-commarce-backend/cron/cronJobs.js` (runs daily at
+3:00 AM, production-only). It only activates once `BACKUPS_BUCKET_NAME` is
+set in the box's `.env` (see `.env.example`) — set it to the
+`backups_bucket_name` Terraform output and restart the backend via PM2. No
+AWS credentials needed; the EC2 instance role already has `s3:PutObject` on
+that bucket. Requires the `mongodb-org-tools` package (installed as part of
+`mongodb-org` in `bootstrap.sh`) so the `mongodump` binary is on `PATH`.
 
 ## Verification checklist
 
