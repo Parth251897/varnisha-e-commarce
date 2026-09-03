@@ -161,45 +161,17 @@ In accordance with the **Master Skill Allocator Protocol**, technical responsibi
 
 ---
 
-### Phase 4: Google Merchant Center Automated XML Feed (Free Listings)
-**Goal**: Feed all Varnisha products into Google Merchant Center automatically without paying for Google Ads. Google uses this feed to display products in Google Search, Shopping tab, Images, Google Lens, and **Gemini**.
+### Phase 4: Google Merchant Center Automated XML Feed (Free Listings) — ✅ COMPLETED
+*Status: Fully Implemented & Tested (13/13 Tests Passed)*
+- Built `services/merchantFeedService.js` outputting Google Shopping RSS 2.0 XML with `xmlns:g="http://base.google.com/ns/1.0"`.
+- Mapped specific artificial jewellery taxonomy: Google Product Category `188` (Jewelry), product type `Apparel & Accessories > Jewelry > Artificial & Costume Jewelry`, statutory 3.0% GST rate (`<g:rate>3.0</g:rate>`), condition `new`, and free express shipping (`0.00 INR`).
+- Mounted live endpoints at `GET /api/v1/products/merchant-feed.xml` and `GET /merchant-feed.xml` in backend.
+- Created Next.js caching route handler `app/merchant-feed.xml/route.js` serving `https://varnisha.com/merchant-feed.xml`.
+- Verified with automated test suite `verify_phase4_merchant_feed.js`. All 36 storefront routes compiled with 0 errors.
 
-1. **Dynamic RSS 2.0 / Google Base XML Feed**:
-   - Endpoint: `GET /api/v1/products/merchant-feed.xml` in `varnisha-e-commarce-backend`.
-   - Produces Google Shopping standard XML:
-     ```xml
-     <?xml version="1.0" encoding="UTF-8"?>
-     <rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">
-       <channel>
-         <title>Varnisha Jewels Product Feed</title>
-         <link>https://varnisha.com</link>
-         <description>Handcrafted Luxury Artificial &amp; Demi-Fine Jewellery</description>
-         <item>
-           <g:id>VJ-KUN-001</g:id>
-           <g:title>Handcrafted Royal Kundan Choker Set</g:title>
-           <g:description>18K Micron Gold Finish with AAA+ CZ Stones and 1-Year Guarantee</g:description>
-           <g:link>https://varnisha.com/products/handcrafted-royal-kundan-choker-set</g:link>
-           <g:image_link>https://api.varnisha.com/uploads/product-1.webp</g:image_link>
-           <g:availability>in_stock</g:availability>
-           <g:price>4999.00 INR</g:price>
-           <g:brand>Varnisha Jewels</g:brand>
-           <g:condition>new</g:condition>
-           <g:google_product_category>188</g:google_product_category>
-           <g:product_type>Jewellery &gt; Necklaces &gt; Kundan Chokers</g:product_type>
-           <g:material>Brass and Copper Alloy</g:material>
-           <g:color>Gold</g:color>
-           <g:shipping>
-             <g:country>IN</g:country>
-             <g:service>Standard Delivery</g:service>
-             <g:price>0.00 INR</g:price>
-           </g:shipping>
-         </item>
-       </channel>
-     </rss>
-     ```
-2. **Automatic Daily Fetch**:
-   - Google Merchant Center fetches this URL once daily at 4:00 AM.
-   - Any price change, stock update, or new product is automatically synced to Google & Gemini with zero manual export/import.
+- **Automated Scheduled Fetch**:
+  - Google Merchant Center can be configured to fetch `https://varnisha.com/merchant-feed.xml` daily.
+  - Any price change, stock update, or new product in the admin panel is automatically synced to Google Free Listings & Gemini with zero manual CSV uploads.
 
 ---
 
