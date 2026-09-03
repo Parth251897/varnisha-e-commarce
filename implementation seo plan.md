@@ -175,27 +175,13 @@ In accordance with the **Master Skill Allocator Protocol**, technical responsibi
 
 ---
 
-### Phase 5: Google Analytics 4 (GA4) Free E-Commerce & AI Attribution
-**Goal**: Track full customer journeys and specifically measure incoming referral traffic from ChatGPT, Perplexity, and Gemini.
-
-1. **Free GA4 E-Commerce Script**:
-   - Implemented in Next.js `layout.js` via official `@next/third-parties/google` (Google Tag).
-   - Driven by free environment variable `NEXT_PUBLIC_GA_MEASUREMENT_ID`.
-
-2. **Standard Enhanced E-Commerce Events**:
-   - `view_item_list` (category browsing)
-   - `view_item` (product detail view)
-   - `add_to_wishlist` (wishlist click)
-   - `add_to_cart` (cart addition)
-   - `begin_checkout` (checkout initiation)
-   - `purchase` (order confirmed with transaction ID & revenue)
-
-3. **AI Search Traffic Attribution**:
-   - Detects and attributes incoming visits from:
-     - `chatgpt.com` (`utm_source=chatgpt.com` or `document.referrer`)
-     - `perplexity.ai`
-     - `gemini.google.com`
-   - Enables reporting on how many sales originated from AI search engines.
+### Phase 5: Google Analytics 4 (GA4) Free E-Commerce & AI Attribution — ✅ COMPLETED
+*Status: Fully Implemented & Tested (18/18 Tests Passed)*
+- Built `components/analytics/GoogleAnalytics.jsx` using `next/script` (`strategy="afterInteractive"`) with `NEXT_PUBLIC_GA_MEASUREMENT_ID`.
+- Implemented automatic **AI Referral Engine Tracking** detecting referrals from `chatgpt.com`, `perplexity.ai`, `gemini.google.com`, `copilot.microsoft.com`, and `claude.ai`.
+- Fires custom GA4 event `ai_referral_visit` and saves origin in `sessionStorage` for downstream checkout/purchase attribution.
+- Created `utils/analytics.js` with standard Enhanced E-Commerce triggers: `trackViewItem`, `trackAddToCart`, `trackAddToWishlist`, `trackBeginCheckout`, and `trackPurchase`.
+- Integrated directly into `app/layout.js`, `ProductInteractiveClient.jsx`, and `order-confirmed/page.js`. Verified with 18 automated tests.
 
 ---
 
