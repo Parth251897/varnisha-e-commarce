@@ -78,7 +78,7 @@ In accordance with the **Master Skill Allocator Protocol**, technical responsibi
 - Converted `app/products/[slug]/page.js` into an Async Server Component with dynamic `generateMetadata()`, pre-hydrated HTML, and full Schema.org `Product` & `BreadcrumbList` JSON-LD.
 - Created `app/products/[slug]/ProductInteractiveClient.jsx` for all gallery zoom, bag, wishlist, and tab interactivity.
 - Converted `app/collections/[slug]/page.js` into a Server Component with `CollectionPage` Schema.org JSON-LD and created `CollectionInteractiveClient.jsx`.
-- Enhanced `app/layout.js` with verified Instagram `@varnishajewels` `sameAs` entity link, WhatsApp contact point, and customer service details.
+- Enhanced `app/layout.js` with verified Instagram `@varnisha_jewels_` `sameAs` entity link, WhatsApp contact point, and customer service details.
 - Verified pre-rendered HTML includes HSN 7117, 18K Micron Gold finish, and 1-Year Anti-Tarnish Guarantee.
 
 2. **Schema.org JSON-LD Structured Data**:
@@ -124,9 +124,9 @@ In accordance with the **Master Skill Allocator Protocol**, technical responsibi
        "name": "Varnisha Jewels",
        "url": "https://varnisha.com",
        "logo": "https://varnisha.com/brand/logo.png",
-       "sameAs": [
-         "https://www.instagram.com/varnishajewels"
-       ]
+        "sameAs": [
+          "https://www.instagram.com/varnisha_jewels_"
+        ]
      }
      ```
    - Inject `BreadcrumbList` schema (`Home > Categories > Kundan Jewellery > Royal Kundan Choker Set`).
@@ -195,7 +195,7 @@ These are the exact, free one-time steps on Google's portals to pair with our au
 3. Google will provide a TXT verification record (e.g. `google-site-verification=...`).
 4. Add this TXT record to your Cloudflare DNS table.
 5. In Search Console left sidebar, click **Sitemaps** ➔ Enter `https://varnisha.com/sitemap.xml` ➔ Click **Submit**.
-6. **Social Profile Verification**: Under **Settings** ➔ **Associations**, link your Instagram account (`https://www.instagram.com/varnishajewels`).
+6. **Social Profile Verification**: Under **Settings** ➔ **Associations**, link your Instagram account (`https://www.instagram.com/varnisha_jewels_`).
 
 ### B. Google Merchant Center Free Setup (Zero Ads Needed!)
 1. Navigate to [Google Merchant Center](https://merchants.google.com/) (Sign in with your Google account).
